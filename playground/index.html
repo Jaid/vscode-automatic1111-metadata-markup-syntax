@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextMate Highlighter Playground</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/the-new-css-reset@1.11.3/css/reset.min.css">
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div id="wrapper">
+      <h1>TextMate Highlighter Playground</h1>
+      <main>
+        <div id="inputSection">
+          <div id="inputHeader">
+            <h2 for="yamlInput">YAML Grammar</h2>
+            <button id="highlightButton">Highlight</button>
+          </div>
+          <textarea id="yamlInput"></textarea>
+        </div>
+        <div id="tokenColumn">
+          <label for="tokenOutput">Tokenized Output (YAML)</label>
+          <code id="tokenOutput" readonly></code>
+        </div>
+        <div id="highlightColumn">
+          <div id="output"></div>
+          <textarea id="exampleText"></textarea>
+        </div>
+      </main>
+    </div>
+    <script type="module">
+      import './main.js'
+    </script>
+  </body>
+
+</html>

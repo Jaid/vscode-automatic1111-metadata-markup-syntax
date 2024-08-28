@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "${workspaceFolder}/temp/sampleProject"
+      ],
+      "name": "Launch Extension",
+      "outFiles": [
+        "${workspaceFolder}/out/webpack/**/*"
+      ],
+      "preLaunchTask": "npm run: build",
+      "request": "launch",
+      "type": "extensionHost"
+    }
+  ]
+}

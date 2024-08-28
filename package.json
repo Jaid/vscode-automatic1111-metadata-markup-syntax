@@ -1,0 +1,81 @@
+{
+  "name": "vscode-automatic1111-metadata-markup-syntax",
+  "displayName": "Automatic1111 Metadata Markup Syntax",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "VSCode syntax highlighting for Automatic1111 metadata markup language",
+  "keywords": [
+    "syntax",
+    "highlighting",
+    "automatic1111",
+    "metadata",
+    "markup",
+    "vsce",
+    "vscode-extension"
+  ],
+  "author": "Jaid <jaid.jsx@gmail.com> (https://github.com/Jaid)",
+  "homepage": "https://github.com/Jaid/vscode-automatic1111-metadata-markup-syntax",
+  "funding": "https://github.com/sponsors/jaid",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jaid/vscode-automatic1111-metadata-markup-syntax"
+  },
+  "main": "./out/webpack/index.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "auto1111",
+        "aliases": [
+          "Automatic1111 Markup",
+          "Automatic1111 Metadata"
+        ],
+        "extensions": [
+          ".auto1111",
+          ".auto1111.txt"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "auto1111",
+        "scopeName": "source.auto1111",
+        "path": "./syntaxes/auto1111.tmLanguage.yaml"
+      }
+    ]
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "scripts": {
+    "build": "webpack",
+    "package": "npm run build && cp license.txt out/webpack && cd out/webpack && vsce package",
+    "start": "tsx x/servePlayground.ts"
+  },
+  "devDependencies": {
+    "@types/koa": "^2",
+    "@types/koa-static-server": "^1",
+    "@types/node": "^22.5.0",
+    "eslint": "^9.9.1",
+    "eslint-config-jaid": "^11.5.1",
+    "fs-extra": "^11.2.0",
+    "koa": "^2.15.3",
+    "koa-static-server": "^1.5.2",
+    "rollup-config-factory": "^0.4.1",
+    "serve": "^14.2.3",
+    "ts-loader": "^9.5.1",
+    "tsconfig-jaid-node": "^8.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.1.0",
+    "vscode-tmgrammar-test": "^0.1.3",
+    "webpack": "^5.94.0",
+    "wireit": "^0.14.8",
+    "yaml": "^2.5.0",
+    "zeug": "^2.0.0"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  }
+}

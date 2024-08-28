@@ -1,0 +1,69 @@
+body {
+  font-family: Arial, sans-serif;
+  background: black;
+  color: white;
+}
+h1 {
+  font-size: 200%;
+}
+main {
+  display: flex;
+  height: 100%;
+}
+main > * {
+  flex-grow: 100;
+  flex-basis: 200px;
+  margin: 5px;
+}
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+#wrapper > main {
+  flex-grow: 1;
+}
+#inputSection {
+  display: flex;
+  flex-direction: column;
+}
+#inputSection > textarea {
+  flex-grow: 1;
+}
+#inputHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#exampleText {
+  flex-grow: 1;
+}
+#yamlInput, #tokenOutput {
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+textarea, code {
+  font-family: monospace;
+  width: 100%;
+}
+#tokenColumn {
+  display: flex;
+  flex-direction: column;
+}
+#tokenColumn > code {
+  flex-grow: 1
+}
+#output {
+  white-space: pre-wrap;
+  font-family: monospace;
+}
+pre {
+  white-space: pre-wrap;
+  font-family: monospace;
+}
+#highlightColumn {
+  flex-grow: 50;
+  display: flex;
+  flex-direction: column;
+}

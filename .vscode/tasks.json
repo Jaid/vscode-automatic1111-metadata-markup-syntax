@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run TextMate grammar test",
+      "type": "shell",
+      "command": "./node_modules/.bin/vscode-tmgrammar-test.cmd --compact 'test/tmgrammar/*'",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": {
+        "owner": "vscode-tmgrammar-test",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
+        "pattern": [
+          {
+            "regexp": "^(ERROR)\\s([^:]+):(\\d+):(\\d+):(\\d+)\\s(.*)$",
+            "severity": 1,
+            "file": 2,
+            "line": 3,
+            "column": 4,
+            "endColumn": 5,
+            "message": 6
+          }
+        ]
+      }
+    }
+  ]
+}
