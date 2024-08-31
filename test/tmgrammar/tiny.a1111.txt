@@ -1,3 +1,0 @@
-1727C6CDDF61 BREAK 1boy <lora:hui_buh:1.2> <lora:skyd:0.8>​​​
-Negative prompt: monochrome, blurry​​​
-Steps: 40, Sampler: Euler Negative, Hashes: {"model": "5e37c6849c", "lora:hui_buh": "0x555b6dd9", "lora:skyd": "768db2a267"}, Lora hashes: "hui_buh: 0x555b6dd9c7, skyd: 768db2a26713", Time taken: 10.2 sec.

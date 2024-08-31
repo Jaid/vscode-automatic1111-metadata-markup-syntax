@@ -9,7 +9,7 @@ koa.use(async (context, next) => {
   const pattern = /^\/grammar\/(?<id>\w+)$/
   const match = pattern.exec(context.path)
   if (match?.groups?.id) {
-    context.body = fs.createReadStream(path.join(rootFolder, `test`, `tmgrammar`, `${match.groups.id}.a1111.txt`))
+    context.body = fs.createReadStream(path.join(rootFolder, `etc`, `sample`, `${match.groups.id}.a1111.txt`))
   }
   await next()
 })
