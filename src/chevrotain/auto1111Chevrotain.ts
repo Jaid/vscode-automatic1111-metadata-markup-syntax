@@ -90,6 +90,10 @@ const sliceValue = (text: string, startOffset: number) => {
 }
 const promptSuffix = `\u200B\u200B\u200B`
 const eolToken = makeToken(`eolToken`, `\n`)
+const eolPopToken = makePopToken(`eolPopToken`, {
+  pattern:`\n`,
+  categories: eolToken,
+})
 const whitespaceToken = makeToken(`whitespaceToken`, /\s+/)
 const blankLineToken = makeToken(`blankLineToken`, /\s*?(?=\n)/)
 const emptyLineToken = makeToken(`emptyLineToken`, {
@@ -183,7 +187,41 @@ const fullPromptToken = makeToken(`fullPromptToken`, {
   pattern: /.+?(?=\u200B{3})/,
   categories: greedyPromptValueToken,
 })
+const firstLineToken = makeToken(`firstLineToken`, {
+  pattern: /.+(?=\n)/,
+  categories: fullPromptToken,
+})
+const firstLineEndToken = makePushToken(`firstLineEndToken`, `secondLine`, {
+  pattern: `\n`,
+  categories: eolToken,
+})
+const secondLineEntryKeyToken = makeToken(`secondLineEntryKeyToken`, {
+  pattern: /negative prompt/i,
+  categories: entryKeyToken,
+})
+const secondLineEntryKeySuffixToken = makeToken(`secondLineEntryKeySuffixToken`, {
+  pattern: `: `,
+  categories: entryKeySuffixToken,
+})
+const secondLineEntryValueToken = makeToken(`secondLineEntryValueToken`, {
+  pattern: /.+(?=\n)/,
+  categories: greedyPromptValueToken,
+})
+const secondLineEndToken = makePushToken(`secondLineEndToken`, `main`, {
+  pattern: `\n`,
+  categories: eolToken,
+})
 const modes = {
+  firstLine: [
+    firstLineEndToken,
+    firstLineToken,
+  ],
+  secondLine: [
+    secondLineEndToken,
+    secondLineEntryKeyToken,
+    secondLineEntryKeySuffixToken,
+    secondLineEntryValueToken,
+  ],
   main: [
     eolToken,
     entryKeyToken,
@@ -206,28 +244,41 @@ const modes = {
 }
 export const auto1111Lexer = new chevrotain.Lexer({
   modes,
-  defaultMode: `main`,
+  defaultMode: `firstLine`,
 }, {
   recoveryEnabled: true,
-  safeMode: true,
   positionTracking: `full`,
 })
 export class Auto1111Parser extends chevrotain.CstParser {
   constructor() {
     super(tokens, {recoveryEnabled: true})
     this.RULE(`document`, () => {
+      this.OPTION1(() => {
+        this.SUBRULE1(this.firstLine)
+        this.SUBRULE2(this.secondLine)
+      })
       this.MANY_SEP({
         SEP: eolToken,
         DEF: () => {
-          this.OPTION(() => this.SUBRULE(this.line))
+          this.OPTION2(() => this.SUBRULE3(this.line))
         },
       })
+    })
+    this.RULE(`firstLine`, () => {
+      this.CONSUME1(firstLineToken)
+      this.CONSUME2(firstLineEndToken)
+    })
+    this.RULE(`secondLine`, () => {
+      this.CONSUME1(secondLineEntryKeyToken)
+      this.CONSUME2(secondLineEntryKeySuffixToken)
+      this.CONSUME3(secondLineEntryValueToken)
+      this.CONSUME4(secondLineEndToken)
     })
     this.RULE(`line`, () => {
       this.OR([
         {ALT: () => this.CONSUME(blankLineToken)},
-        {ALT: () => this.SUBRULE2(this.entriesLine)},
-        {ALT: () => this.SUBRULE1(this.promptLine)},
+        {ALT: () => this.SUBRULE4(this.entriesLine)},
+        {ALT: () => this.SUBRULE5(this.promptLine)},
       ])
     })
     this.RULE(`promptLine`, () => {
@@ -280,15 +331,37 @@ export class Auto1111Extractor extends chevrotain.EmbeddedActionsParser {
     super(tokens, {recoveryEnabled: true})
     this.RULE(`document`, () => {
       const entries = []
+      this.OPTION(() => {
+        const promptEntry = this.SUBRULE1(this.firstLine)
+        if (promptEntry?.value) {
+          entries.push(promptEntry)
+        }
+        const negativePromptEntry = this.SUBRULE2(this.secondLine)
+        if (negativePromptEntry?.value) {
+          entries.push(negativePromptEntry)
+        }
+      })
       this.MANY(() => {
         const entry = this.OR([
-          {ALT: () => this.SUBRULE(this.entry)},
+          {ALT: () => this.SUBRULE3(this.entry)},
           {ALT: () => this.CONSUME(fullPromptToken).image},
         ])
         const entryNormalized = typeof entry === `string` ? {key: `Prompt`, value: entry} : entry
         entries.push(entryNormalized)
       })
       return Object.fromEntries(entries.map(entry => [entry.key, entry.value]))
+    })
+    this.RULE(`firstLine`, () => {
+      const value = this.CONSUME(firstLineToken).image
+      this.CONSUME(firstLineEndToken)
+      return {key: `Prompt`, value}
+    })
+    this.RULE(`secondLine`, () => {
+      const key = this.CONSUME(secondLineEntryKeyToken).image
+      this.CONSUME(secondLineEntryKeySuffixToken)
+      const value = this.CONSUME(secondLineEntryValueToken).image
+      this.CONSUME(secondLineEndToken)
+      return {key, value}
     })
     this.RULE(`entry`, () => {
       const key = this.CONSUME(entryKeyToken).image
