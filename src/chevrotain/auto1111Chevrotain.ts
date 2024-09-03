@@ -91,7 +91,7 @@ const sliceValue = (text: string, startOffset: number) => {
 const promptSuffix = `\u200B\u200B\u200B`
 const eolToken = makeToken(`eolToken`, `\n`)
 const eolPopToken = makePopToken(`eolPopToken`, {
-  pattern:`\n`,
+  pattern: `\n`,
   categories: eolToken,
 })
 const whitespaceToken = makeToken(`whitespaceToken`, /\s+/)
@@ -277,8 +277,8 @@ export class Auto1111Parser extends chevrotain.CstParser {
     this.RULE(`line`, () => {
       this.OR([
         {ALT: () => this.CONSUME(blankLineToken)},
-        {ALT: () => this.SUBRULE4(this.entriesLine)},
-        {ALT: () => this.SUBRULE5(this.promptLine)},
+        {ALT: () => this.SUBRULE1(this.entriesLine)},
+        {ALT: () => this.SUBRULE2(this.promptLine)},
       ])
     })
     this.RULE(`promptLine`, () => {
@@ -346,27 +346,36 @@ export class Auto1111Extractor extends chevrotain.EmbeddedActionsParser {
           {ALT: () => this.SUBRULE3(this.entry)},
           {ALT: () => this.CONSUME(fullPromptToken).image},
         ])
-        const entryNormalized = typeof entry === `string` ? {key: `Prompt`, value: entry} : entry
+        const entryNormalized = typeof entry === `string` ? {
+          key: `Prompt`,
+          value: entry,
+        } : entry
         entries.push(entryNormalized)
       })
       return Object.fromEntries(entries.map(entry => [entry.key, entry.value]))
     })
     this.RULE(`firstLine`, () => {
-      const value = this.CONSUME(firstLineToken).image
-      this.CONSUME(firstLineEndToken)
-      return {key: `Prompt`, value}
+      const value = this.CONSUME1(firstLineToken).image
+      this.CONSUME2(firstLineEndToken)
+      return {
+        key: `Prompt`,
+        value,
+      }
     })
     this.RULE(`secondLine`, () => {
-      const key = this.CONSUME(secondLineEntryKeyToken).image
-      this.CONSUME(secondLineEntryKeySuffixToken)
-      const value = this.CONSUME(secondLineEntryValueToken).image
-      this.CONSUME(secondLineEndToken)
-      return {key, value}
+      const key = this.CONSUME1(secondLineEntryKeyToken).image
+      this.CONSUME2(secondLineEntryKeySuffixToken)
+      const value = this.CONSUME3(secondLineEntryValueToken).image
+      this.CONSUME4(secondLineEndToken)
+      return {
+        key,
+        value,
+      }
     })
     this.RULE(`entry`, () => {
       const key = this.CONSUME(entryKeyToken).image
       this.CONSUME(entryKeySuffixToken)
-      let value = this.SUBRULE(this.value)
+      const value = this.SUBRULE(this.value)
       return {
         key,
         value,
